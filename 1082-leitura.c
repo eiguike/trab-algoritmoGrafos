@@ -20,13 +20,14 @@ typedef struct{
   int queue[27];
 }QUEUE;
 
+
 int is_queue_empty(QUEUE *q){
   return q->begin == q->end ? TRUE : FALSE;
 }
 
 int remove_queue(QUEUE * q){
   int aux = q->queue[q->begin];
-  printf("%c,", aux+97);
+  //printf("%c,", aux+97);
   q->begin+=1;
 
   return aux;
@@ -35,6 +36,27 @@ void insert_queue(QUEUE * q, int value){
   q->queue[q->end] = value;
   q->end+=1;
 }
+
+int sort_queue(QUEUE *q){
+  int i, j, aux;
+  for(i = (q->end) -1; i >= 1; i--){
+    for(j = 0; j < i; j++){
+      if(q->queue[j] > q->queue[j+1]){
+        aux = q->queue[j];
+        q->queue[j] = q->queue[j+1];
+        q->queue[j+1] = aux;
+      }
+    }
+  }
+}
+
+void print_queue(QUEUE * q){
+  int i;
+
+  for(i=0; i<(q->end); i++)
+    printf("%c,", q->queue[i]);
+}
+
 
 // Variables necessary to use BFS
 int color[27];
@@ -53,12 +75,13 @@ void initialize_queue(QUEUE * q, int N){
   initialize_vector(q->queue, ZERO, N);
 }
 
-int BFS(const int graph[MAXN][MAXN], int root, int N){
-  QUEUE q;
+int BFS(int graph[MAXN][MAXN], int root, int N){
+  QUEUE q, vertices;
   int u, i, i2;
 
 
   initialize_queue(&q, N);
+  initialize_queue(&vertices, N);
 
   dist[root] = ZERO;
   color[root] = GRAY;
@@ -67,6 +90,8 @@ int BFS(const int graph[MAXN][MAXN], int root, int N){
   insert_queue(&q, root);
   while(!is_queue_empty(&q)){
     u = remove_queue(&q);
+    insert_queue(&vertices, u+97);
+
     for(i=0; i < N; i++){
       // it is adjacent
       if(graph[u][i] > 0){
@@ -75,14 +100,17 @@ int BFS(const int graph[MAXN][MAXN], int root, int N){
           pred[i] = u;
           color[i] = GRAY;
           insert_queue(&q, i);
-        } 
+        }
       }
     }
     color[u] = BLACK;
   }
 
+  sort_queue(&vertices);
+  print_queue(&vertices);
+
 }
- 
+
 int main(int argc, char** argv) {
 
   char x,y; 
@@ -91,7 +119,7 @@ int main(int argc, char** argv) {
 
   /*Reads number of cases */
   scanf("%d", &C);
-  
+
   for (k=0; k < C;k++){
     initialize_vector(color, WHITE, N);
     initialize_vector(dist, INFINITE, N);
@@ -100,14 +128,14 @@ int main(int argc, char** argv) {
     /* Reads input. */
     scanf("%d %d", &N, &M);
     /* printf("%d %d\n", N, M); */
-    
+
     /* Initialize graph matrix */    
     for (i=0; i < N; i++)
       for (j=0; j < N; j++)
-       graph[i][j] = 0;
+        graph[i][j] = 0;
 
     /* Reads graph */
-     for (i=0; i < M; i++){
+    for (i=0; i < M; i++){
       /* edge u v */
       scanf(" %c", &x);
       scanf(" %c", &y);
@@ -116,27 +144,27 @@ int main(int argc, char** argv) {
       graph[u][v] = graph[v][u] = 1;
     }
 
-   //  /* Debug -- Writes graph matrix */ 
-   //  for (i=0; i < N; i++){
-   //    for (j=0; j < N; j++)
-   //     printf("%d ", graph[i][j]);
-   //   printf("\n");
-   // }
-   printf("Case #%d:\n",k+1);
+    //  /* Debug -- Writes graph matrix */ 
+    //  for (i=0; i < N; i++){
+    //    for (j=0; j < N; j++)
+    //     printf("%d ", graph[i][j]);
+    //   printf("\n");
+    // }
+    printf("Case #%d:\n",k+1);
 
-   int total = 0;
-   for (i = 0; i < N; i++){
+    int total = 0;
+    for (i = 0; i < N; i++){
       if (color[i] == WHITE){
         BFS(graph, i, N);
         printf("\n");
         total++;
       }
-   }
-   printf("%d connected components\n\n", total);
-   // printf("DIST: ");
-   // for (i = 0; i < N; i++){
-   //   printf(" %d ", dist[i]);
-   // }
-   // printf("\n");
- } 
+    }
+    printf("%d connected components\n\n", total);
+    // printf("DIST: ");
+    // for (i = 0; i < N; i++){
+    //   printf(" %d ", dist[i]);
+    // }
+    // printf("\n");
+  } 
 }
