@@ -1,12 +1,15 @@
+// Primeira Trabalho - Algoritmo em Grafos 2016/2
 // Ângela Rodrigues Ferreira
 // Henrique Teruo Eihara
+//
+// https://www.urionlinejudge.com.br/judge/en/problems/view/1082
 
 #include <stdio.h>
 
 #define MAXN 30
 
 #define WHITE 0
-#define GRAY 1 
+#define GRAY 1
 #define BLACK 2
 #define INFINITE -1
 #define ZERO 0
@@ -17,9 +20,8 @@
 typedef struct{
   int begin;
   int end;
-  int queue[27];
+  int queue[MAXN];
 }QUEUE;
-
 
 int is_queue_empty(QUEUE *q){
   return q->begin == q->end ? TRUE : FALSE;
@@ -32,6 +34,7 @@ int remove_queue(QUEUE * q){
 
   return aux;
 }
+
 void insert_queue(QUEUE * q, int value){
   q->queue[q->end] = value;
   q->end+=1;
@@ -56,7 +59,6 @@ void print_queue(QUEUE * q){
   for(i=0; i<(q->end); i++)
     printf("%c,", q->queue[i]);
 }
-
 
 // Variables necessary to use BFS
 int color[27];
@@ -113,7 +115,7 @@ int BFS(int graph[MAXN][MAXN], int root, int N){
 
 int main(int argc, char** argv) {
 
-  char x,y; 
+  char x,y;
   int N, M, C, i, j, k, u, v;
   int graph[MAXN][MAXN];
 
@@ -123,13 +125,13 @@ int main(int argc, char** argv) {
   for (k=0; k < C;k++){
     initialize_vector(color, WHITE, N);
     initialize_vector(dist, INFINITE, N);
-    initialize_vector(pred, ZERO, N); 
+    initialize_vector(pred, ZERO, N);
 
     /* Reads input. */
     scanf("%d %d", &N, &M);
     /* printf("%d %d\n", N, M); */
 
-    /* Initialize graph matrix */    
+    /* Initialize graph matrix */
     for (i=0; i < N; i++)
       for (j=0; j < N; j++)
         graph[i][j] = 0;
@@ -144,12 +146,13 @@ int main(int argc, char** argv) {
       graph[u][v] = graph[v][u] = 1;
     }
 
-    //  /* Debug -- Writes graph matrix */ 
-    //  for (i=0; i < N; i++){
-    //    for (j=0; j < N; j++)
-    //     printf("%d ", graph[i][j]);
-    //   printf("\n");
-    // }
+    /* Debug -- Writes graph matrix
+       for (i=0; i < N; i++){
+       for (j=0; j < N; j++)
+       printf("%d ", graph[i][j]);
+       printf("\n");
+       } */
+
     printf("Case #%d:\n",k+1);
 
     int total = 0;
@@ -161,10 +164,5 @@ int main(int argc, char** argv) {
       }
     }
     printf("%d connected components\n\n", total);
-    // printf("DIST: ");
-    // for (i = 0; i < N; i++){
-    //   printf(" %d ", dist[i]);
-    // }
-    // printf("\n");
-  } 
+  }
 }
