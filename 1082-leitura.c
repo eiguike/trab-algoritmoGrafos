@@ -1,7 +1,7 @@
 // Primeira Trabalho - Algoritmo em Grafos 2016/2
 // Ângela Rodrigues Ferreira
 // Henrique Teruo Eihara
-//
+// Hitalo Siqueira
 // https://www.urionlinejudge.com.br/judge/en/problems/view/1082
 
 #include <stdio.h>
