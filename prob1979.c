@@ -1,3 +1,7 @@
+// Ângela Rodrigues Ferreira
+// Henrique Teruo Eihara
+// Hitalo Siqueira
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
