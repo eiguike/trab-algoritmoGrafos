@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define RED 10
+#define BLUE 11
 #define PRETO 2
 #define CINZA 1
 #define BRANCO 0
@@ -19,7 +21,7 @@ typedef struct NO{
 }no;
 typedef no* lista;
 
-int cor[MAX], pred[MAX], d[MAX], f[MAX], peso[MAX], tempo, elementos, topSort[MAX];
+int cor[MAX], pred[MAX], d[MAX], f[MAX], peso[MAX], tempo, elementos, topSort[MAX], achou = 0;
 
 void iniciaLista(lista *pl);
 void insereInicio(lista *pl, int vertice);
@@ -30,6 +32,7 @@ void removeInicio(lista *pl, int *vertice);
 int buscaLargura(lista listaAdj[], int n);
 void DFS(lista listaAdj[], int n);
 void DFS_AUX(lista listaAdj[], no *aux, int u);
+int procuraVertice(lista *pl, int v);
 
 int main(int argc, char** argv) {
 
@@ -229,7 +232,7 @@ void DFS_AUX(lista listaAdj[], no *aux, int u){
 
 int buscaLargura(lista listaAdj[], int n){
   lista q;
-  int vertice, max, i, dist[n], cor[n], pred[n];
+  int vertice, max, i, dist[n], cor[n], pred[n], corAux[n];
   no *aux;
 
   for(i=0;i<n;i++){
@@ -260,15 +263,32 @@ int buscaLargura(lista listaAdj[], int n){
       //ADICIONAR CONDIÇÃO QUE VERIFIQUE AS CORES
       //SE A COR DOS VERTICES DA ARESTA FOR A MESMA RETORNA 0
       //IMPRIME NAO
-      if((cor[aux->v] == CINZA) && (cor[vertice] == CINZA)){
-        return 0;
+      //PROCURAR NO GRAFO SE EXISTE ARESTA QUE LIGA O VERTICE u e v
+
+      if((procuraVertice(&listaAdj[aux->v], vertice) == 1) && (cor[aux->v] == cor[vertice])){
+          printf("achou nao\n");
       }
+
     }
 
     cor[vertice] = PRETO;
     aux = aux->prox;
+    
     }
   }
 
   return 1;   
+}
+
+int procuraVertice(lista *pl, int v){
+  no *aux;
+  
+  aux = *pl;
+  if (aux == NULL)  
+    return 0;
+  if (aux->v == v)  
+    return 1;
+  
+  return procuraVertice (&(aux->prox), v);
+
 }
