@@ -27,7 +27,7 @@ void insereFim(lista *pl, int vertice);
 void liberaLista(lista *pl);
 void imprimeLista(lista *pl);
 void removeInicio(lista *pl, int *vertice);
-void buscaLargura(lista listaAdj[], int n);
+int buscaLargura(lista listaAdj[], int n);
 void DFS(lista listaAdj[], int n);
 void DFS_AUX(lista listaAdj[], no *aux, int u);
 
@@ -78,7 +78,10 @@ int main(int argc, char** argv) {
       printf("\n");
       } */
     
-    buscaLargura(listaAdj, N);
+    if(buscaLargura(listaAdj, N))
+      printf("SIM\n");
+    else
+      printf("NAO\n");
  
     for(i=0;i<N;i++){
         liberaLista(&listaAdj[i]);
@@ -224,54 +227,48 @@ void DFS_AUX(lista listaAdj[], no *aux, int u){
   tempo++;
 }
 
-void buscaLargura(lista listaAdj[], int n){
-    lista q;
-    int vertice, max, i, dist[n], cor[n], pred[n];
-    no *aux;
- 
-    for(i=0;i<n;i++){
-        dist[i] = n + 1;
-        cor[i] = BRANCO;
-        pred[i] = n + 1;
-    }
- 
-    dist[0] = 0;
-    cor[0] = CINZA;
-    pred[0] = NULO;
- 
-    iniciaLista(&q);
-    insereFim(&q, 0);
- 
-    while(q != NULL){
-        removeInicio(&q, &vertice);
-        aux = listaAdj[vertice];
- 
-        while(aux != NULL){
-            if(cor[aux->v] == BRANCO){
-                cor[aux->v] = CINZA;
-                dist[aux->v] = dist[vertice] + 1;
-                pred[aux->v] = vertice;
-                insereFim(&q, aux->v);
-            }
-             
-            cor[vertice] = PRETO;
-            aux = aux->prox;
-        }   
+int buscaLargura(lista listaAdj[], int n){
+  lista q;
+  int vertice, max, i, dist[n], cor[n], pred[n];
+  no *aux;
+
+  for(i=0;i<n;i++){
+      dist[i] = n + 1;
+      cor[i] = BRANCO;
+      pred[i] = n + 1;
+  }
+
+  dist[0] = 0;
+  cor[0] = CINZA;
+  pred[0] = NULO;
+
+  iniciaLista(&q);
+  insereFim(&q, 0);
+
+  while(q != NULL){
+      removeInicio(&q, &vertice);
+      aux = listaAdj[vertice];
+
+  while(aux != NULL){
+    if(cor[aux->v] == BRANCO){
+        cor[aux->v] = CINZA;
+        dist[aux->v] = dist[vertice] + 1;
+        pred[aux->v] = vertice;
+        insereFim(&q, aux->v);
+    }else{
+
+      //ADICIONAR CONDIÇÃO QUE VERIFIQUE AS CORES
+      //SE A COR DOS VERTICES DA ARESTA FOR A MESMA RETORNA 0
+      //IMPRIME NAO
+      if((cor[aux->v] == CINZA) && (cor[vertice] == CINZA)){
+        return 0;
+      }
     }
 
-    for(i=0;i<n;i++){
-      printf("%d ", cor[i]);
+    cor[vertice] = PRETO;
+    aux = aux->prox;
     }
-    printf("\n");
+  }
 
-    for(i=0;i<n;i++){
-      printf("%d ", pred[i]);
-    }
-    printf("\n");
-
-    for(i=0;i<n;i++){
-      printf("%d ", cor[i]);
-    }
-    printf("\n");
-
+  return 1;   
 }
