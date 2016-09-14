@@ -7,11 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define RED 10
-#define BLUE 11
-#define PRETO 2
+#define PRETO 0
 #define CINZA 1
-#define BRANCO 0
+#define BRANCO -1
 #define NULO -1
 #define MAX 6000
 
@@ -31,7 +29,7 @@ void imprimeLista(lista *pl);
 void removeInicio(lista *pl, int *vertice);
 int buscaLargura(lista listaAdj[], int n);
 void DFS(lista listaAdj[], int n);
-void DFS_AUX(lista listaAdj[], no *aux, int u);
+int DFS_AUX(lista listaAdj[], no *aux, int u, int corIniciallista);
 int procuraVertice(lista *pl, int v);
 
 int main(int argc, char** argv) {
@@ -40,62 +38,57 @@ int main(int argc, char** argv) {
   int N, M, C, i, j, k, u, v;
   char string[500];
   char * token;
-  
+
   /*Reads number vertices */
   fgets(string, sizeof(string), stdin);
   sscanf(string, "%d", &N);
   //printf("%d\n", N); 
-  
 
-  
   while(N != 0){
     lista listaAdj[N];
 
     for(i=0;i<N;i++){
       iniciaLista(&listaAdj[i]);
     }
-    
+
     for (k=0; k < N; k++) {
-      /* Reads vertex */
+    /* Reads vertex */
       fgets(string, sizeof(string), stdin);
       sscanf(string, "%d", &i);
-      //printf("%d\n", i); 
-      
+    //printf("%d\n", i); 
+
       /* Reads list of vertices adjacent to vertex i */
       fgets(string, sizeof(string), stdin);
       token = strtok(string," "); 
       while (token != NULL){
-  j = atoi(token);
-  //printf("%d ", j);
-  insereFim(&listaAdj[i - 1], j - 1);
-  insereFim(&listaAdj[j - 1], i - 1);
-  token = strtok(NULL," ");
+        j = atoi(token);
+        //printf("%d ", j);
+        insereFim(&listaAdj[i - 1], j - 1);
+        insereFim(&listaAdj[j - 1], i - 1);
+        token = strtok(NULL," ");
       }
-      //printf("\n", j);
-    }
-    
-    /* Debug -- Writes graph matrix */ 
-    /* for (i=0; i < N; i++){
-      for (j=0; j < N; j++)
-  printf("%d ", graph[i][j]);
-      printf("\n");
-      } */
-    
-    if(buscaLargura(listaAdj, N))
-      printf("SIM\n");
-    else
-      printf("NAO\n");
- 
-    for(i=0;i<N;i++){
-        liberaLista(&listaAdj[i]);
+    //printf("\n", j);
     }
 
-    /* Reads number of vertices. */
+  /* Debug -- Writes graph matrix */ 
+  /* for (i=0; i < N; i++){
+    for (j=0; j < N; j++)
+printf("%d ", graph[i][j]);
+    printf("\n");
+    } */
+
+    DFS(listaAdj, N);
+
+    for(i=0;i<N;i++){
+      liberaLista(&listaAdj[i]);
+    }
+
+  /* Reads number of vertices. */
     fgets(string, sizeof(string), stdin);
     sscanf(string, "%d", &N);
-    //printf("%d\n", N);
-    
-    
+  //printf("%d\n", N);
+
+
   } 
 }
 
@@ -115,12 +108,12 @@ void insereInicio(lista *pl, int vertice){
 
 void insereFim(lista *pl, int vertice){
   no *novoNo, *aux;
-  
+
   if(*pl == NULL){
     novoNo = (no*) malloc(sizeof(no));
     novoNo->v = vertice;
     novoNo->prox = NULL;
-    
+
     *pl = novoNo;
 
   }else{
@@ -131,7 +124,7 @@ void insereFim(lista *pl, int vertice){
 
 void liberaLista(lista *pl){
   no *aux;
-  
+
   aux = *pl;
   if(*pl != NULL){
     if(aux->prox != NULL){
@@ -144,7 +137,7 @@ void liberaLista(lista *pl){
 
 void imprimeLista(lista *pl){
   no *aux;
-  
+
   aux = *pl;
   if(aux == NULL){  
     return;
@@ -168,7 +161,7 @@ void removeInicio(lista *pl, int *vertice){
 }
 
 void DFS(lista listaAdj[], int n){
-  int i, pesoAux[n], tempoMax;
+  int i, tempoMax;
   no *aux;
 
   for(i=0;i<n;i++){
@@ -177,13 +170,22 @@ void DFS(lista listaAdj[], int n){
     d[i] = NULO;
     f[i] = NULO;
   }
+
   tempo = 0;
 
   for(i=0;i<n;i++){
     if(cor[i] == BRANCO){
-      DFS_AUX(listaAdj, aux, i);
+      if(DFS_AUX(listaAdj, aux, i, CINZA)){
+        printf("SIM\n");
+      }else{
+        printf("NAO\n");
+        break;
+      }
     }
   }
+}
+
+  /*
   for(i=0;i<n;i++){
     pesoAux[i] = peso[i];
   }
@@ -204,41 +206,43 @@ void DFS(lista listaAdj[], int n){
       tempoMax = pesoAux[i];
     }
   }
-  printf("%d\n",tempoMax);
-}
+  */
 
-void DFS_AUX(lista listaAdj[], no *aux, int u){
+int DFS_AUX(lista listaAdj[], no *aux, int u, int corInicial){
 
-  cor[u] = CINZA;
+  cor[u] = corInicial;
   d[u] = tempo;
   tempo++;
 
   aux = listaAdj[u];
+  //printf("%d",u);
 
   while(aux != NULL){
     if(cor[aux->v] == BRANCO){
       pred[aux->v] = u;
-      DFS_AUX(listaAdj, aux, aux->v);
+      DFS_AUX(listaAdj, aux, aux->v, corInicial == CINZA ? PRETO : CINZA);
+    }else if(cor[aux->v] == corInicial){
+      return 0;
     }
     aux = aux->prox;
   }
-  cor[u] = PRETO;
+  //cor[u] = PRETO;
   f[u] = tempo;
 
   topSort[elementos] = u;
   elementos--;
   tempo++;
 }
-
+/*
 int buscaLargura(lista listaAdj[], int n){
   lista q;
   int vertice, max, i, dist[n], cor[n], pred[n], corAux[n];
   no *aux;
 
   for(i=0;i<n;i++){
-      dist[i] = n + 1;
-      cor[i] = BRANCO;
-      pred[i] = n + 1;
+    dist[i] = n + 1;
+    cor[i] = BRANCO;
+    pred[i] = n + 1;
   }
 
   dist[0] = 0;
@@ -249,46 +253,45 @@ int buscaLargura(lista listaAdj[], int n){
   insereFim(&q, 0);
 
   while(q != NULL){
-      removeInicio(&q, &vertice);
-      aux = listaAdj[vertice];
+    removeInicio(&q, &vertice);j
+    aux = listaAdj[vertice];
 
-  while(aux != NULL){
-    if(cor[aux->v] == BRANCO){
+    while(aux != NULL){
+      if(cor[aux->v] == BRANCO){
         cor[aux->v] = CINZA;
         dist[aux->v] = dist[vertice] + 1;
         pred[aux->v] = vertice;
         insereFim(&q, aux->v);
-    }else{
+      }else{
 
-      //ADICIONAR CONDIÇÃO QUE VERIFIQUE AS CORES
-      //SE A COR DOS VERTICES DA ARESTA FOR A MESMA RETORNA 0
-      //IMPRIME NAO
-      //PROCURAR NO GRAFO SE EXISTE ARESTA QUE LIGA O VERTICE u e v
+        //ADICIONAR CONDIÇÃO QUE VERIFIQUE AS CORES
+        //SE A COR DOS VERTICES DA ARESTA FOR A MESMA RETORNA 0
+        //IMPRIME NAO
+        //PROCURAR NO GRAFO SE EXISTE ARESTA QUE LIGA O VERTICE u e v
 
-      if((procuraVertice(&listaAdj[aux->v], vertice) == 1) && (cor[aux->v] == cor[vertice])){
+        if((procuraVertice(&listaAdj[aux->v], vertice) == 1) && (cor[aux->v] == cor[vertice])){
           printf("achou nao\n");
+        }
       }
 
-    }
+      cor[vertice] = PRETO;
+      aux = aux->prox;
 
-    cor[vertice] = PRETO;
-    aux = aux->prox;
-    
     }
   }
 
   return 1;   
-}
+} */
 
 int procuraVertice(lista *pl, int v){
   no *aux;
-  
+
   aux = *pl;
   if (aux == NULL)  
     return 0;
   if (aux->v == v)  
     return 1;
-  
+
   return procuraVertice (&(aux->prox), v);
 
 }
