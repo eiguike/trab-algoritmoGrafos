@@ -13,6 +13,8 @@
 #define NULO -1
 #define MAX 6000
 
+int ret;
+
 typedef struct NO{
   int v;
   struct NO *prox;
@@ -163,6 +165,7 @@ void removeInicio(lista *pl, int *vertice){
 void DFS(lista listaAdj[], int n){
   int i, tempoMax;
   no *aux;
+  ret = 1;
 
   for(i=0;i<n;i++){
     cor[i] = BRANCO;
@@ -175,7 +178,8 @@ void DFS(lista listaAdj[], int n){
 
   for(i=0;i<n;i++){
     if(cor[i] == BRANCO){
-      if(DFS_AUX(listaAdj, aux, i, CINZA)){
+      DFS_AUX(listaAdj, aux, i, CINZA);
+      if(ret){
         printf("SIM\n");
       }else{
         printf("NAO\n");
@@ -221,8 +225,10 @@ int DFS_AUX(lista listaAdj[], no *aux, int u, int corInicial){
     if(cor[aux->v] == BRANCO){
       pred[aux->v] = u;
       DFS_AUX(listaAdj, aux, aux->v, corInicial == CINZA ? PRETO : CINZA);
-    }else if(cor[aux->v] == corInicial){
-      return 0;
+    }
+    if(cor[aux->v] == corInicial){
+      ret = 0;
+      //return 0;
     }
     aux = aux->prox;
   }
