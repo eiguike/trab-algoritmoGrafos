@@ -36,8 +36,6 @@ int main(int argc, char** argv) {
 
   scanf("%d %d", &N, &M);
 
-  // n = vertex
-  // m = edges
   while(N != 0 || M != 0){
     flag = 0;
 
@@ -48,9 +46,9 @@ int main(int argc, char** argv) {
     for (k=0; k < M; k++) {
       scanf("%d %d %d", &V, &W, &P);
 
-      insereFim(&listaAdj[V-1], W - 1);
+      insereInicio(&listaAdj[V-1], W - 1);
       if(P == 2)
-        insereFim(&listaAdj[W-1], V - 1);
+        insereInicio(&listaAdj[W-1], V - 1);
     }
 
     for(i=0; i<N; i++){
@@ -147,9 +145,6 @@ int DFS(lista listaAdj[], int n, int start){
 
   for(i=0;i<n;i++){
     cor[i] = BRANCO;
-    pred[i] = NULO;
-    d[i] = NULO;
-    f[i] = NULO;
   }
   DFS_AUX(listaAdj, aux, start);
   flag++;
