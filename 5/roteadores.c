@@ -46,7 +46,7 @@ int kruskal(int R, int C){
 	while(C--){
 		for(i = 0; i < R; i++){
 			for(j = 0; j < R; j++){
-				if(matAdj[i][j] < min){
+				if(matAdj[i][j] < min && matAdj != INFINITO){
 					min = matAdj[i][j];
 					linha = i;
 					coluna = j;
